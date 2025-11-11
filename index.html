@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国学禅语 · 静心修心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "SimSun", "宋体", serif;
+            background-color: #f5f2eb;
+            color: #333;
+            line-height: 1.6;
+        }
+        /* 顶部导航栏（含登录注册） */
+        .top-nav {
+            background-color: #2c261f;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .logo {
+            color: #d4b87a;
+            font-size: 1.5rem;
+            letter-spacing: 0.2rem;
+            font-weight: bold;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .auth-btn {
+            padding: 0.5rem 1.2rem;
+            border: 2px solid #d4b87a;
+            border-radius: 6px;
+            background: transparent;
+            color: #d4b87a;
+            font-size: 1rem;
+            letter-spacing: 0.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .auth-btn:hover {
+            background-color: #d4b87a;
+            color: #2c261f;
+            font-weight: bold;
+        }
+        /* 头部标题区 */
+        .header {
+            background: url('https://picsum.photos/id/1054/1920/300') no-repeat center;
+            background-size: cover;
+            padding: 3.5rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+        }
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            color: #f8f3e6;
+            letter-spacing: 0.3rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .header p {
+            font-size: 1.2rem;
+            color: #e8dfcc;
+            max-width: 800px;
+            margin: 0 auto;
+            letter-spacing: 0.1rem;
+        }
+        /* 板块导航 tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #3a3228;
+            padding: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #d4b87a;
+            font-size: 1.4rem;
+            padding: 0.8rem 2.5rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            letter-spacing: 0.2rem;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+        .tab-btn.active {
+            background-color: #d4b87a;
+            color: #2c261f;
+            font-weight: bold;
+        }
+        .tab-btn:hover:not(.active) {
+            color: #f8f3e6;
+            background-color: rgba(212, 184, 122, 0.2);
+        }
+        /* 内容区 */
+        .content-container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        .tab-content {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+        .tab-content.active {
+            display: grid;
+        }
+        /* 禅语卡片 */
+        .zen-card {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .zen-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .card-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 2px solid #d4b87a;
+            transition: transform 0.5s ease;
+        }
+        .zen-card:hover .card-img {
+            transform: scale(1.05);
+        }
+        .card-text {
+            padding: 1.8rem;
+            font-size: 1.1rem;
+            color: #444;
+            letter-spacing: 0.08rem;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .card-text::before {
+            content: "“";
+            font-size: 2rem;
+            color: #d4b87a;
+            margin-right: 0.5rem;
+        }
+        .card-text::after {
+            content: "”";
+            font-size: 2rem;
+            color: #d4b87a;
+            margin-left: 0.5rem;
+        }
+        /* 登录注册弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #f8f5f0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-modal:hover {
+            color: #d4b87a;
+        }
+        .modal-title {
+            font-size: 1.8rem;
+            color: #2c261f;
+            text-align: center;
+            margin-bottom: 2rem;
+            letter-spacing: 0.2rem;
+            border-bottom: 2px solid #d4b87a;
+            padding-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #444;
+            font-size: 1.1rem;
+            letter-spacing: 0.1rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: "SimSun", serif;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #d4b87a;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #d4b87a;
+            color: #2c261f;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            letter-spacing: 0.15rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+        .submit-btn:hover {
+            background-color: #c2a668;
+        }
+        .modal-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            color: #666;
+        }
+        .modal-switch a {
+            color: #d4b87a;
+            text-decoration: none;
+            letter-spacing: 0.05rem;
+        }
+        .modal-switch a:hover {
+            text-decoration: underline;
+        }
+        /* 响应式适配 */
+        @media (max-width: 992px) {
+            .tab-content {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            .tab-btn {
+                font-size: 1.2rem;
+                padding: 0.6rem 1.8rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab-btn {
+                margin: 0.3rem;
+                padding: 0.5rem 1.2rem;
+                font-size: 1.1rem;
+            }
+            .tab-content {
+                grid-template-columns: 1fr;
+            }
+            .card-img {
+                height: 180px;
+            }
+            .logo {
+                font-size: 1.3rem;
+            }
+            .auth-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.9rem;
+            }
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏（含登录注册按钮） -->
+    <div class="top-nav">
+        <div class="logo">禅语静心阁</div>
+        <div class="auth-buttons">
+            <button class="auth-btn" id="loginBtn">登录</button>
+            <button class="auth-btn" id="registerBtn">注册</button>
+        </div>
+    </div>
+
+    <!-- 头部标题区 -->
+    <div class="header">
+        <div class="header-content">
+            <h1>国学禅语 · 静心修心</h1>
+            <p>以禅语明心，以国学润志，陶冶情操，净化心灵，提升心境</p>
+        </div>
+    </div>
+
+    <!-- 板块导航 -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="meditate">静心</button>
+        <button class="tab-btn" data-tab="sublime">升华</button>
+        <button class="tab-btn" data-tab="cultivate">修心</button>
+    </div>
+
+    <!-- 内容容器 -->
+    <div class="content-container">
+        <!-- 静心板块（12张卡片） -->
+        <div class="tab-content active" id="meditate">
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1039/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">心若静，风奈何；心若安，尘不染。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1043/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">一念放下，万般自在；心无挂碍，方得安宁。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1050/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">静水流深，智者无言；心平气和，万事顺意。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1059/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">心乱则事乱，心定则事定；静能生慧，躁则生烦。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1063/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">静坐常思己过，闲谈莫论人非；静心观己，方能明辨。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1069/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">世事纷扰，守心自暖；以静制动，以柔克刚。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1024/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">心净则国土净，心安则众生安；静心度日，皆是晴天。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1080/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">非淡泊无以明志，非宁静无以致远；静心沉淀，方得始终。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1082/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">万物静观皆自得，四时佳兴与人同；静心观物，感悟真谛。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1019/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">静以修身，俭以养德；心无旁骛，方得始终。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1023/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">花开花落皆自在，云卷云舒任天然；静心待之，万事随缘。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1035/600/400" alt="静心禅语" class="card-img">
+                <div class="card-text">心不妄动，则身安；身不安，则心不宁；守静为要。</div>
+            </div>
+        </div>
+
+        <!-- 升华板块（12张卡片） -->
+        <div class="tab-content" id="sublime">
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1025/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">境由心生，相由心转；心有丘壑，眼存山河。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1036/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">海纳百川，有容乃大；壁立千仞，无欲则刚。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1040/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">胸有文墨怀若谷，腹有诗书气自华。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1047/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">不为外物所累，不为琐事所扰；心向光明，自会升华。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1054/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">穷则独善其身，达则兼济天下；格局越大，境界越高。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1066/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">人生如茶，沉时坦然，浮时淡然；历经沉淀，方得醇香。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1073/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">心有猛虎，细嗅蔷薇；刚柔并济，方为境界。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1074/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">道在迩而求诸远，事在易而求诸难；升华始于当下。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1076/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">壁立千仞，无欲则刚；海纳百川，有容乃大。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1077/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">一念顿悟，万法皆空；心境升华，万事从容。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1078/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">不畏浮云遮望眼，自缘身在最高层；格局决定高度。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1079/600/400" alt="升华禅语" class="card-img">
+                <div class="card-text">人生如旅，不必在乎目的地，在乎的是沿途风景与心境。</div>
+            </div>
+        </div>
+
+        <!-- 修心板块（12张卡片） -->
+        <div class="tab-content" id="cultivate">
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1028/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">修心先修德，德高心自正；行善积福，心安理得。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1037/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">君子慎独，不欺暗室；修心于细微，成事于坚持。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1044/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">以善待人，以德服众；心宽一尺，路宽一丈。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1052/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">少欲则心静，寡言则神安；修心在于减，而非增。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1060/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">知足者常乐，感恩者多福；修一颗平常心，过好每一天。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1071/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">心有慈悲，处处温暖；行有善念，步步生花。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1081/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">修心当以净心为要，治国当以平心为先。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1083/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">境随心转则悦，心随境转则烦；修心在于守心。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1084/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">待人以宽，律己以严；修心在于自省，成事在于自律。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1085/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">心有正念，行有正途；修心不只是静，更是明辨是非。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1086/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">善念如灯，照亮前路；恶念如雾，遮蔽光明；修心在择善。</div>
+            </div>
+            <div class="zen-card">
+                <img src="https://picsum.photos/id/1087/600/400" alt="修心禅语" class="card-img">
+                <div class="card-text">人生下半场，拼的是心态；修心到位，事事顺遂。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录弹窗 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeLogin">&times;</span>
+            <h2 class="modal-title">登录禅语静心阁</h2>
+            <form>
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="submit-btn">登录</button>
+                <div class="modal-switch">
+                    还没有账号？<a href="javascript:;" id="goToRegister">立即注册</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 注册弹窗 -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeRegister">&times;</span>
+            <h2 class="modal-title">注册禅语静心阁</h2>
+            <form>
+                <div class="form-group">
+                    <label for="registerUsername">用户名</label>
+                    <input type="text" id="registerUsername" class="form-control" placeholder="请设置用户名" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">密码</label>
+                    <input type="password" id="registerPassword" class="form-control" placeholder="请设置密码" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">确认密码</label>
+                    <input type="password" id="registerConfirm" class="form-control" placeholder="请确认密码" required>
+                </div>
+                <button type="submit" class="submit-btn">注册</button>
+                <div class="modal-switch">
+                    已有账号？<a href="javascript:;" id="goToLogin">立即登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 板块切换功能
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // 登录注册弹窗功能
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const closeLogin = document.getElementById('closeLogin');
+        const closeRegister = document.getElementById('closeRegister');
+        const goToRegister = document.getElementById('goToRegister');
+        const goToLogin = document.getElementById('goToLogin');
+
+        // 打开登录弹窗
+        loginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'flex';
+        });
+
+        // 打开注册弹窗
+        registerBtn.addEventListener('click', () => {
+            registerModal.style.display = 'flex';
+        });
+
+        // 关闭登录弹窗
+        closeLogin.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        // 关闭注册弹窗
+        closeRegister.addEventListener('click', () => {
+            registerModal.style.display = 'none';
+        });
+
+        // 切换到注册
+        goToRegister.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            registerModal.style.display = 'flex';
+        });
+
+        // 切换到登录
+        goToLogin.addEventListener('click', () => {
+            registerModal.style.display = 'none';
+            loginModal.style.display = 'flex';
+        });
+
+        // 点击弹窗外部关闭
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) loginModal.style.display = 'none';
+            if (e.target === registerModal) registerModal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
